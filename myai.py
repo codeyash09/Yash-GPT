@@ -653,7 +653,6 @@ layer_files = ['Wq_layers.npy', 'Wk_layers.npy', 'Wv_layers.npy',
 
 
 if all(os.path.exists(f) for f in layer_files):
-    print("Loading existing multi-layer weights...")
     Wq_raw = np.load('Wq_layers.npy', allow_pickle=True)
     Wk_raw = np.load('Wk_layers.npy', allow_pickle=True)
     Wv_raw = np.load('Wv_layers.npy', allow_pickle=True)
@@ -661,7 +660,6 @@ if all(os.path.exists(f) for f in layer_files):
     Wh1_raw = np.load('Wh1_layers.npy', allow_pickle=True)
     Wh2_raw = np.load('Wh2_layers.npy', allow_pickle=True)
 
-    # Convert back to Cupy arrays and put them in lists
     Wq = [n.asarray(layer) for layer in Wq_raw]
     Wk = [n.asarray(layer) for layer in Wk_raw]
     Wv = [n.asarray(layer) for layer in Wv_raw]
@@ -669,7 +667,6 @@ if all(os.path.exists(f) for f in layer_files):
     Wh1 = [n.asarray(layer) for layer in Wh1_raw]
     Wh2 = [n.asarray(layer) for layer in Wh2_raw]
 else:
-    print("No weight files found. Initializing fresh weights...")
     Wq, Wk, Wv, Wo, Wh1, Wh2 = [], [], [], [], [], []
     for i in range(num_layers):
         Wq.append(xinit(dim, dim))
@@ -679,9 +676,9 @@ else:
         Wh2.append(xinit(4 * dim, dim))
 
         if i == num_layers - 1:
-            Wo.append(xinit(dim, len(words))) # Project to vocab
+            Wo.append(xinit(dim, len(words))) 
         else:
-            Wo.append(xinit(dim, dim)) # Latent space projection
+            Wo.append(xinit(dim, dim)) 
 
     
 
@@ -720,7 +717,6 @@ if(train):
             save_layers('Wh1_layers.npy', Wh1)
             save_layers('Wh2_layers.npy', Wh2)
 
-            # Saving vectors/dict
             cpu_dict = {word: vectors[dictionaryLookup[word]].get() for word in words}
             np.save('vocab.npy', cpu_dict)
             print(f"\n[Checkpoint] Step {i} | GLoss: {GLoss/(i+1):.4f}")
