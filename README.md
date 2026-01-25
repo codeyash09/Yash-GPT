@@ -1,3 +1,6 @@
+
+🚨🚨🚨🚨🚨🚨🚨🚨🚨 BETA IS UNDER DEVELOPMENT: INFERENCE IS NOT BUILT AND IT DOES NOT TRAIN FULLY  🚨🚨🚨🚨🚨🚨🚨🚨🚨
+
 <h1>Overview</h1>
 
 Hi! Im Yash
@@ -33,10 +36,24 @@ Use alpha, beta is unstable and will slow down and completely stop improving at 
 
 <h2> Training </h2>
 <h3>Training may take multiple days to train to a level of coherent generation </h3>
-<p>Set train to True and let it run.</p>
+<p>Set train to True and let it run. Furthermore for alpha unlock dictionary by setting dictLock to False</p>
 <p>Sidenote: I recommend only stopping training once it prints "[Checkpoint] Step ... | GLoss: ..." as it will not save otherwise</p>
 
 <h2> Generation </h2>
 <h3>WRITE DOES NOT WORK ON BETA YET</h3>
 <p>Turn off train (set train to False) at the start which will lead to generation</p>
 <p>Sidenote: To change seed text, line 814 in alpha is calling the write function, simply change the text inside the "" to whatever seed text one prefers. Furthermore, one can adjust how many token will be generated using the second parameter of the write function.</p>
+
+
+<h1>STATS!!!</h1>
+<h2>ALPHA</h2>
+<li>512 dimensions</li>
+<li>8 heads</li>
+<li>6 layers</li>
+
+<br>
+
+<h2>BETA</h2> 
+<li>1024 dimensions</li>
+<li>16 heads</li>
+<li>12 layers</li>
