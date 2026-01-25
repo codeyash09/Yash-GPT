@@ -750,7 +750,7 @@ if(train):
             sys.stdout.write(f'\rProgress: |{bar:<20}| {percent:.1f}% | {lock} | {dictLock}')
             sys.stdout.flush()
 
-        if i % (10000) == 0:
+        if i % (steps * 0.0005) == 0:
             
 
             save_layers('Wk_layers.npy', Wk)
