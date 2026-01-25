@@ -53,6 +53,7 @@ I'm saying this so you understand how much power it uses and I know that it does
 <li>512 dimensions</li>
 <li>8 heads</li>
 <li>6 layers</li>
+<li>89,662,976 parameters</li>
 
 <br>
 
@@ -60,3 +61,4 @@ I'm saying this so you understand how much power it uses and I know that it does
 <li>1024 dimensions</li>
 <li>16 heads</li>
 <li>12 layers</li>
+<li>292,584,448 parameters</li>
