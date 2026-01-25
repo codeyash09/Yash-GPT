@@ -1,3 +1,5 @@
+<h1>Overview</h1>
+
 Hi! Im Yash
 
 I wanted to make an slm and trained it on kid's stories...
@@ -17,4 +19,24 @@ Current GLoss (Beta) - 6.07892381159827
 
 I built this over the course of winter break and did not make the repo until later on because I did not have a need to share this with anyone until then and also because I already locally backup my files.
 
-Use alpha, beta is unstable and will slow down and completely stop improving at 5.95 (I am investigating this currently) ---> Current Culprit: Overfitting due to low data to parameters ratio.
+Use alpha, beta is unstable and will slow down and completely stop improving at 5.95 (I am investigating this currently) ---> Current Culprit: Overfitting due to low data to parameters ratio. 
+
+
+<h1>Quick Start</h1>
+
+<p style="text-weight:bold;">Requires:</p>
+<li>CuPy (NVIDIA GPU)</li>
+<li>Python</li>
+<li>NumPy</li>
+
+<br>
+
+<h2> Training </h2>
+<h3>Training may take multiple days to train to a level of coherent generation </h3>
+<p>Set train to True and let it run.</p>
+<p>Sidenote: I recommend only stopping training once it prints "[Checkpoint] Step ... | GLoss: ..." as it will not save otherwise</p>
+
+<h2> Generation </h2>
+<h3>WRITE DOES NOT WORK ON BETA YET</h3>
+<p>Turn off train (set train to False) at the start which will lead to generation</p>
+<p>Sidenote: To change seed text, line 814 in alpha is calling the write function, simply change the text inside the "" to whatever seed text one prefers. Furthermore, one can adjust how many token will be generated using the second parameter of the write function.</p>
