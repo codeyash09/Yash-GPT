@@ -12,7 +12,9 @@ Do not be worried about even layers (0, 2, 4) having spikes (both above and belo
 
 When I used a uniform decay, I encountered dying ReLU and without any decay, ReLU would gradually climb to above 70% and cause Loss to spike. Thus, I have found that this alternating method works best.
 
-Current GLoss (As of 1/6/26) 4.247961485781738
-
+Best GLoss (As of 1/6/26 - ALPHA) 4.247961485781738
+Current GLoss (Beta) - 6.07892381159827
 
 I built this over the course of winter break and did not make the repo until later on because I did not have a need to share this with anyone until then and also because I already locally backup my files.
+
+Use alpha, beta is unstable and will slow down and completely stop improving at 5.95 (I am investigating this currently) ---> Current Culprit: Overfitting due to low data to parameters ratio.
