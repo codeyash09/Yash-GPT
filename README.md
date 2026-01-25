@@ -1,5 +1,5 @@
 
-🚨🚨🚨🚨🚨🚨 BETA IS UNDER DEVELOPMENT: INFERENCE IS NOT BUILT AND IT DOES NOT TRAIN FULLY  🚨🚨🚨🚨🚨🚨
+🚨🚨🚨🚨 BETA IS UNDER DEVELOPMENT: INFERENCE IS NOT BUILT AND IT DOES NOT TRAIN FULLY  🚨🚨🚨🚨
 
 <h1>Overview</h1>
 
@@ -23,6 +23,9 @@ Current GLoss (Beta) - 6.07892381159827
 I built this over the course of winter break and did not make the repo until later on because I did not have a need to share this with anyone until then and also because I already locally backup my files.
 
 Use alpha, beta is unstable and will slow down and completely stop improving at 5.95 (I am investigating this currently) ---> Current Culprit: Overfitting due to low data to parameters ratio. 
+
+Anyways, I trained this on my rtx 4080 super with 64 gigs of ram and a ryzen 9 7950x3d on the pc I built over the last summer. Basically this is a warning because my GPU was at 99% usage with 7.6 gigs of its VRAM used up on one batch on beta (alpha is not as strenous) but I was also using 25.8 gigs of ddr5 ram. 
+I'm saying this so you understand how much power it uses and I know that it does not work on all devices.
 
 
 <h1>Quick Start</h1>
