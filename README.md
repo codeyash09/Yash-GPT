@@ -62,3 +62,6 @@ I'm saying this so you understand how much power it uses and I know that it does
 <li>16 heads</li>
 <li>12 layers</li>
 <li>292,584,448 parameters</li>
+
+^^^working now^^^ - 2/8/26
+But I need to push which I will do after I train it to 3.8 or something: right now it's at gloss of 4.8
