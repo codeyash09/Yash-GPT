@@ -5,7 +5,7 @@
 
 Hi! Im Yash
 
-I am working on building a block-based coding website where children can build transformers using blocks and I am trying to make it have 10 difficulty levels so it goes from surface level to true math: the rationale for this is that I want to teach kids at a young age how llms work because I learned coding from Scratch as a second grader and have self-studied to get to where I am, so imagine if a second grader learns backprop.
+I am working on building a block-based coding website where children can build transformers using blocks and I am trying to make it have 10 difficulty levels so it goes from surface level to true math: the rationale for this is that I want to teach kids at a young age how llms work because I learned coding from Scratch as a second grader and have self-studied to get to where I am, so imagine if a second grader learns backprop. The reason I made this is because of the quote attributed to Albert Einstein about if I can't explain it simply I don't understand it enough so I need to understand it as deeply as possible before I try to teach anyone.
 
 I would have uploaded my "trained" weights too but github would not allow me to upload files that large.
 
