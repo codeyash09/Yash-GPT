@@ -6,17 +6,22 @@ import sys
 
 #globals
 
+
+
 new = False
 dictLock = False
 train = True
 dim = 1024
 vocabSize = 0
 num_heads = 16
-learning_rate = 0.01 #the lr is rly high but I did this so it will cause the model to jump out of plateaus.
-base_lr = learning_rate
 
 num_layers = 12
-batch = 1 #batch size cuz i did not want to wait like three weeks for it to hit 4 GLoss.
+learning_rate = 0.0001 #the lr is rly high but I did this so it will cause the model to jump out of plateaus. Nvm im just make it warm up to the correct size
+
+base_lr = 0.01/math.sqrt(num_layers)
+
+
+batch = 3 #batch size cuz i did not want to wait like three weeks for it to hit 4 GLoss. MAX MY GPU CAN HANDLE: I TRIED 8 but it would offload to the cpu
 
 
 GLoss = 0 #to be deleted later
@@ -58,7 +63,8 @@ def backNormLayer(out, x, smallConst): # this function came from a patchwork of 
     return dx
 
 def xinit(rows, cols): #https://www.geeksforgeeks.org/deep-learning/xavier-initialization/
-    limit = math.sqrt(6/(rows+cols)) * (1/math.sqrt(2*num_layers))
+    # limit = math.sqrt(6/(rows+cols)) * (1/math.sqrt(2*num_layers))
+    limit = math.sqrt(2.0 / rows) #He init now bc i want to speed up my start
     return n.random.uniform(-limit, limit, size=(rows, cols))
 
 
@@ -73,7 +79,7 @@ with open('input.txt', 'r', encoding='utf-8') as f:
 
 
 
-cleaned = raw_text.replace('-', " ").replace('.', "").replace(',', "").replace('?', "").replace('!', "").replace(':', "").replace(';', "").replace('--', " ").replace("'", " ").replace('"', " ").replace('(', " ").replace(')', " ").replace('[', " ").replace(']', " ").replace('—'," ").replace('”', " ").replace('–', ' ').replace(' s ', ' ').replace('“', ' ').lower().split()
+cleaned = raw_text.replace('-', " - ").replace('.', " . ").replace(',', " , ").replace('?', " ? ").replace('!', " ! ").replace(':', " : ").replace(';', " ; ").replace('--', " -- ").replace("'", " ' ").replace('"', ' " ').replace('(', " ( ").replace(')', " ) ").replace('[', " [ ").replace(']', " ] ").replace('—'," — ").replace('”', " ” ").replace('–', ' – ').replace(' s ', ' s ').replace('“', ' “ ').lower().split()
 
 wordCount = {}
 for word in cleaned:
@@ -172,6 +178,8 @@ def AttentionHead(segments, targets, Wk, Wq, Wv, Wh1, Wh2, Wo_final): #segment l
         # if os.path.exists('Wo_' + str(id) + '.npy') and os.path.getsize('Wo_' + str(id) + '.npy') > 0:
         #     Wq = np.load(f'Wq_{id}.npy')
         #     Wk = np.load(f'Wk_{id}.npy')
+        
+
         #     Wv = np.load(f'Wv_{id}.npy')
         #     Wo = np.load(f'Wo_{id}.npy')
         # else:
@@ -313,7 +321,7 @@ def AttentionHead(segments, targets, Wk, Wq, Wv, Wh1, Wh2, Wo_final): #segment l
         all_Zb = []
         all_h2b = []
 
-        currentX = vectors[segments].copy() + PE
+        currentX = (vectors[segments].copy()) + PE
 
         for i in range(num_layers):
             X = normLayer(currentX, 1e-5)
@@ -356,7 +364,7 @@ def AttentionHead(segments, targets, Wk, Wq, Wv, Wh1, Wh2, Wo_final): #segment l
 
             Z = Z.reshape(bSize, lengthOfSegment, dim)
 
-            Z = Z + currentX
+            Z = Z / math.sqrt(num_layers) + currentX
 
             Zn = normLayer(Z, 1e-5)
 
@@ -374,7 +382,7 @@ def AttentionHead(segments, targets, Wk, Wq, Wv, Wh1, Wh2, Wo_final): #segment l
             if Counterx % ((num_layers*1000) + 1) == 0:
                 
                 active_ratio = n.mean(hidden1 > 0) 
-                print(f" | Layer {i} ReLU Activity: {active_ratio:.2%}")
+                print(f" | Layer {i} ReLU Activity: {active_ratio:.2%} | Weight Scale: {n.linalg.norm(Wh1[i])}")
             Counterx+=1
 
             all_h1.append(hidden1)
@@ -382,7 +390,7 @@ def AttentionHead(segments, targets, Wk, Wq, Wv, Wh1, Wh2, Wo_final): #segment l
 
             hidden2 = hidden1 @ Wh2[i]
 
-            hidden2 += 0.5 * Z
+            hidden2 += Z
             all_h2b.append(hidden2.copy())
 
             h2b = hidden2
@@ -423,6 +431,15 @@ def AttentionHead(segments, targets, Wk, Wq, Wv, Wh1, Wh2, Wo_final): #segment l
         correct = Probabilities[n.arange(bSize)[:, n.newaxis], n.arange(lengthOfSegment), targets] #basically this is the loss stuff its cool but only for visuals and this is the loss for the entire segment
  
         Loss = -n.mean(n.log(correct + 1e-10)) #loss for entire segment
+
+        if i % 100 == 0:
+            print(f"\n=== Step {i} ===")
+            print(f"Loss: {Loss:.4f}")
+            for layer_idx in range(num_layers):
+                print(f"Layer {layer_idx}: Wq_norm={n.linalg.norm(grad_Wq[layer_idx]):.4f}, "
+                    f"Wh1_norm={n.linalg.norm(grad_Wh1[layer_idx]):.4f}")
+            print(f"Output range: [{n.min(output):.2f}, {n.max(output):.2f}]")
+            print(f"Embedding norm: {n.mean(n.linalg.norm(vectors, axis=1)):.4f}")
         Error = Probabilities.copy()    
 
         Error[n.arange(bSize)[:, n.newaxis], n.arange(lengthOfSegment), targets] -= 1.0
@@ -433,6 +450,7 @@ def AttentionHead(segments, targets, Wk, Wq, Wv, Wh1, Wh2, Wo_final): #segment l
         dE = Error @ Wo_final.T
 
         grad_Wo_final = n.sum(n.transpose(currentX, (0,2,1)) @ Error, axis=0) / bSize
+
 
 
         grad_Wq, grad_Wv, grad_Wk, grad_Wh1, grad_Wh2= [None] * num_layers, [None] * num_layers, [None] * num_layers, [None] * num_layers, [None] * num_layers
@@ -450,7 +468,7 @@ def AttentionHead(segments, targets, Wk, Wq, Wv, Wh1, Wh2, Wo_final): #segment l
             grad_Wh1[i] = n.sum(n.transpose(normLayer(all_Zb[i], 1e-5), (0,2,1)) @ dhidden1, axis=0) / bSize
             
             dz = backNormLayer(dhidden1 @ Wh1[i].T, all_Zb[i], 1e-5)
-            dz += dhidden2 * 0.5
+            dz = dz/math.sqrt(num_layers) + dhidden2
            
 
             dz_heads = dz.reshape(bSize, lengthOfSegment, num_heads, dimPerHead)
@@ -484,7 +502,7 @@ def AttentionHead(segments, targets, Wk, Wq, Wv, Wh1, Wh2, Wo_final): #segment l
 
             
             Sx = dQ @ Wq[i].T + dK @ Wk[i].T + dV @ Wv[i].T
-
+            Sx = Sx / math.sqrt(num_layers)
             # rError = Sx + dhidden2
             dE = Sx + dhidden2
 
@@ -508,29 +526,34 @@ def AttentionHead(segments, targets, Wk, Wq, Wv, Wh1, Wh2, Wo_final): #segment l
                 g -= n.mean(g, axis=0, keepdims=True)
 
                 norm = n.linalg.norm(g)
-                if norm > 0.5:
-                    g *= (0.5 / norm)
+                
+                if norm > 1.0:
+                    g*=1.0/norm
 
             f = [grad_Wv[i], grad_Wk[i], grad_Wq[i], grad_Wh2[i], grad_Wh1[i]]
             j = [Wv[i], Wk[i], Wq[i], Wh2[i], Wh1[i]]
             for w in range(len(f)):
                 if f[w] is not None:
                     j[w] -= learning_rate * f[w]
-            if(i%2 == 1):
+            # if(i%2 == 0):
+            active_ratio = n.mean(hidden1 > 0) 
+               
+            if n.linalg.norm(Wh1[i]) > 10 and active_ratio > 0.50 and i%2 == 1:
                 Wh1[i] *= 0.92
                 Wh2[i] *= 0.92
         Wo_final -= learning_rate * grad_Wo_final
         
         if(not dictLock):
             v_grad = n.clip(dE, -1.00, 1.0)
-            for batch in range(bSize):
-                vectors[segments[batch]] -= (learning_rate * v_grad[batch])
+            for batch in n.unique(segments.flatten()):
+                
+                vectors[batch] -= (learning_rate * n.sum(v_grad[(segments == batch)], axis=0))
 
 
             #DUDE.... I trained for 24 whole hours on my gpu on 1/20/26 without this block and it caused the words to explode...
             nrm = n.linalg.norm(vectors, axis=1, keepdims = True)
-            nrm = n.max(nrm)
-            vectors = n.clip(vectors / nrm, -10,10)
+        
+            vectors = n.where(nrm > 1.0, vectors/nrm, vectors) # deleted the max scaling bc i realized if everything is becoming huge then there is no point of it
 
         used[id] = 0
 
@@ -750,7 +773,7 @@ if(train):
             sys.stdout.write(f'\rProgress: |{bar:<20}| {percent:.1f}% | {lock} | {dictLock}')
             sys.stdout.flush()
 
-        if i % (steps * 0.0005) == 0:
+        if i % (steps * 0.00005) == 0:
             
 
             save_layers('Wk_layers.npy', Wk)
@@ -765,12 +788,14 @@ if(train):
             np.save('vocab.npy', cpu_dict)
             print(f"\n[Checkpoint] Step {i} | GLoss: {GLoss/(i+1):.4f}")
 
-     
-   
+
+
+
+
     
 
         # learning_rate = max(0.00001, base_lr * (0.95 ** (i / (steps*0.01))))
-        min_lr = 0.00001
+        min_lr = 0.00001 
         learning_rate = min_lr + (0.5) * (base_lr - min_lr) * (1 + math.cos(math.pi * i / steps))
         
     
@@ -784,7 +809,7 @@ if(train):
     
 def write(segment_str, leng):
     output_str = segment_str
-    segment = segment_str.replace('-', " ").replace('.', "").replace(',', "").replace('?', "").replace('!', "").replace(':', "").replace(';', "").replace('--', " ").replace("'", " ").replace('"', " ").replace('(', " ").replace(')', " ").replace('[', " ").replace(']', " ").replace('—'," ").replace('”', " ").replace('–', ' ').replace(' s ', ' ').replace('“', ' ').lower().split()
+    segment = segment_str.replace('-', " - ").replace('.', " . ").replace(',', " , ").replace('?', " ? ").replace('!', " ! ").replace(':', " : ").replace(';', " ; ").replace('--', " -- ").replace("'", " ' ").replace('"', ' " ').replace('(', " ( ").replace(')', " ) ").replace('[', " [ ").replace(']', " ] ").replace('—'," — ").replace('”', " ” ").replace('–', ' – ').replace(' s ', ' s ').replace('“', ' “ ').lower().split()
     
     if len(segment) < dim:
         segment = ["<PAD>"] * (dim - len(segment)) + segment
@@ -873,7 +898,7 @@ def write(segment_str, leng):
 
 
         # lengthOfSegment = X.shape[0] #rows of X aka # of words
-        lengthOfSegment = leng
+        lengthOfSegment = dim
         
         dimPerHead = int(dim / num_heads)
 
@@ -938,7 +963,8 @@ def write(segment_str, leng):
         all_Zb = []
         all_h2b = []
 
-        currentX = vectors[segment_str].copy() + PE
+
+        currentX = vectors[n.array([dictionaryLookup[word] for word in segment])].copy() + PE
 
         for i in range(num_layers):
             X = normLayer(currentX, 1e-5)
@@ -981,7 +1007,7 @@ def write(segment_str, leng):
 
             Z = Z.reshape(bSize, lengthOfSegment, dim)
 
-            Z = Z + currentX
+            Z = Z / math.sqrt(num_layers) + currentX
 
             Zn = normLayer(Z, 1e-5)
 
@@ -1007,7 +1033,7 @@ def write(segment_str, leng):
 
             hidden2 = hidden1 @ Wh2[i]
 
-            hidden2 += 0.5 * Z
+            hidden2 += Z
             all_h2b.append(hidden2.copy())
 
             h2b = hidden2
@@ -1019,10 +1045,10 @@ def write(segment_str, leng):
 
         out = currentX @ Wo_final
 
-        logits = out[-1] / 0.8
+        logits = out[0,-1,:] / 0.8
         
         for word in ['and', 'the']:
-            logits[dictionaryLookup[word]] -= 0.5 
+            logits[dictionaryLookup[word]] -= 0.3
         
         Probabilities = softmax(logits)
         
@@ -1126,6 +1152,10 @@ Log:
   - Ok so big issue: I found that the larger model (ie 12 layer, 1024 dim, 16 head) is unable to break 5.9 in GLoss: I believe that this is likely caused by overfitting due to the large size so I hope to move to open web text 2: although I dont even know where to start with formatting that into a text file. 
   - Things to research: max size of a .txt file: i may have to switch to a different input data metric...
   - Worst case scenario is that I completely broke the entire system when I tried to build out the more complicated features like final output weighting instead of per layer so hopefully that is not the case...
+
+  - 2/9/26
+  - First log in a long time: basically while I was working on this project in the past two weeks, I did not have much time to really implement any new major changes. 
+  - However, yesterday I added in punctuation to beta but no post processing. Also this has not been tested fully yet but it is at a GLoss of 5.01 as of 11:14 am today which means that after like one more day of training I think I will have good quality or at least slightly comprehensible output.
 
   DISCLAIMER: I attempted to do the math and I have failed a bunch of times so it may not be perfect. Also, I did need help from articles to get some of the math for the backpropogation. The math for PE and Attention came directly from Attention is All You Need. 
 
