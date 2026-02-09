@@ -45,9 +45,9 @@ I'm saying this so you understand how much power it uses and I know that it does
 <p>Sidenote: I recommend only stopping training once it prints "[Checkpoint] Step ... | GLoss: ..." as it will not save otherwise</p>
 
 <h2> Generation </h2>
-<h3>WRITE DOES NOT WORK ON BETA YET</h3>
 <p>Turn off train (set train to False) at the start which will lead to generation</p>
 <p>Sidenote: To change seed text, line 814 in alpha is calling the write function, simply change the text inside the "" to whatever seed text one prefers. Furthermore, one can adjust how many token will be generated using the second parameter of the write function.</p>
+<p>Sidenote: beta's generation is rather slow but it has punctuation now but no post processing so it will not capitalize after a period, exclamation point, question mark, or any other end of sentence punctuation. Furthermore, punctuation is seperated by spaces in beta.</p>
 
 
 <h1>STATS!!!</h1>
@@ -64,6 +64,3 @@ I'm saying this so you understand how much power it uses and I know that it does
 <li>16 heads</li>
 <li>12 layers</li>
 <li>292,584,448 parameters</li>
-
-^^^working now^^^ - 2/8/26
-But I need to push which I will do after I train it to 3.8 or something: right now it's at gloss of 4.8
