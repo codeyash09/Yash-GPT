@@ -12,8 +12,10 @@ I would have uploaded my "trained" weights too but github would not allow me to 
 <h2> Update: 3/1/26 </h2>
 <p>Beta works however for faster runs, delete the input.txt file and rename "oldinput.txt" to "input.txt". Also now it makes loss curve pngs!!!</p>
 <img width="631" height="478" alt="image" src="https://github.com/user-attachments/assets/d2784859-2204-4238-b697-e2d32d53f074" />
-<img width="588" height="435" alt="image" src="https://github.com/user-attachments/assets/28627947-59cd-4851-b5af-a7c5f004c1c2" />
+<p>Fresh start: 0.0001 lr</p>
 
+<img width="588" height="435" alt="image" src="https://github.com/user-attachments/assets/28627947-59cd-4851-b5af-a7c5f004c1c2" />
+<p>0.005 lr</p>
 
                                                                
 
