@@ -20,7 +20,7 @@ vocabSize = 0
 num_heads = 16
 
 num_layers = 12
-learning_rate = 0.005 #the lr is rly high but I did this so it will cause the model to jump out of plateaus. Nvm im just make it warm up to the correct size
+learning_rate = 0.0001 #the lr is rly high but I did this so it will cause the model to jump out of plateaus. Nvm im just make it warm up to the correct size
 
 base_lr = 0.01/math.sqrt(num_layers)
 
