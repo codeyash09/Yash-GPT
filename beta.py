@@ -3,8 +3,12 @@ import numpy as np
 import math
 import os
 import sys
+import matplotlib.pyplot as plt
+
 
 #globals
+
+
 
 
 
@@ -16,12 +20,12 @@ vocabSize = 0
 num_heads = 16
 
 num_layers = 12
-learning_rate = 0.0001 #the lr is rly high but I did this so it will cause the model to jump out of plateaus. Nvm im just make it warm up to the correct size
+learning_rate = 0.005 #the lr is rly high but I did this so it will cause the model to jump out of plateaus. Nvm im just make it warm up to the correct size
 
 base_lr = 0.01/math.sqrt(num_layers)
 
 
-batch = 3 #batch size cuz i did not want to wait like three weeks for it to hit 4 GLoss. MAX MY GPU CAN HANDLE: I TRIED 8 but it would offload to the cpu
+batch = 1 #batch size cuz i did not want to wait like three weeks for it to hit 4 GLoss. MAX MY GPU CAN HANDLE: I TRIED 8 but it would offload to the cpu
 
 
 GLoss = 0 #to be deleted later
@@ -31,6 +35,11 @@ Counterx = 0 #to be deleted later
 used = []
 for i in range(num_heads):
     used.append(0)
+
+
+xs = []
+ys = []
+
 
 #globals ^
 
@@ -322,6 +331,7 @@ def AttentionHead(segments, targets, Wk, Wq, Wv, Wh1, Wh2, Wo_final): #segment l
         all_h2b = []
 
         currentX = (vectors[segments].copy()) + PE
+        mask = n.tril(n.ones((lengthOfSegment, lengthOfSegment))) 
 
         for i in range(num_layers):
             X = normLayer(currentX, 1e-5)
@@ -347,7 +357,6 @@ def AttentionHead(segments, targets, Wk, Wq, Wv, Wh1, Wh2, Wo_final): #segment l
             scores = (Q @ n.transpose(K, (0,1,3,2))) / math.sqrt(dimPerHead) 
 
 
-            mask = n.tril(n.ones((lengthOfSegment, lengthOfSegment))) 
             scores = n.where(mask == 0, -1e9, scores)
 
             A = softmax(scores)
@@ -432,14 +441,14 @@ def AttentionHead(segments, targets, Wk, Wq, Wv, Wh1, Wh2, Wo_final): #segment l
  
         Loss = -n.mean(n.log(correct + 1e-10)) #loss for entire segment
 
-        if i % 100 == 0:
-            print(f"\n=== Step {i} ===")
-            print(f"Loss: {Loss:.4f}")
-            for layer_idx in range(num_layers):
-                print(f"Layer {layer_idx}: Wq_norm={n.linalg.norm(grad_Wq[layer_idx]):.4f}, "
-                    f"Wh1_norm={n.linalg.norm(grad_Wh1[layer_idx]):.4f}")
-            print(f"Output range: [{n.min(output):.2f}, {n.max(output):.2f}]")
-            print(f"Embedding norm: {n.mean(n.linalg.norm(vectors, axis=1)):.4f}")
+        # if i % 100 == 0:
+        #     print(f"\n=== Step {i} ===")
+        #     print(f"Loss: {Loss:.4f}")
+        #     for layer_idx in range(num_layers):
+        #         print(f"Layer {layer_idx}: Wq_norm={n.linalg.norm(grad_Wq[layer_idx]):.4f}, "
+        #             f"Wh1_norm={n.linalg.norm(grad_Wh1[layer_idx]):.4f}")
+        #     print(f"Output range: [{n.min(output):.2f}, {n.max(output):.2f}]")
+        #     print(f"Embedding norm: {n.mean(n.linalg.norm(vectors, axis=1)):.4f}")
         Error = Probabilities.copy()    
 
         Error[n.arange(bSize)[:, n.newaxis], n.arange(lengthOfSegment), targets] -= 1.0
@@ -515,32 +524,67 @@ def AttentionHead(segments, targets, Wk, Wq, Wv, Wh1, Wh2, Wo_final): #segment l
             #         vectors[word] /= normalize
           
 
-
+       
         for i in range(num_layers):
-            for g in [grad_Wv[i], grad_Wk[i], grad_Wq[i], grad_Wh2[i], grad_Wh1[i]]:
+            grads = [grad_Wv[i], grad_Wk[i], grad_Wq[i], grad_Wh2[i], grad_Wh1[i]]
+            weights = [Wv, Wk, Wq, Wh2, Wh1]
 
+            for idx in range(len(grads)):
+                g = grads[idx]
                 if g is None:
                     continue
                 
-                g+= n.random.normal(0,0.001*base_lr, g.shape) 
-                g -= n.mean(g, axis=0, keepdims=True)
+                
 
                 norm = n.linalg.norm(g)
                 
                 if norm > 1.0:
-                    g*=1.0/norm
+                    grads[idx]*=1.0/norm
+                weights[idx][i] -= learning_rate * grads[idx]
 
-            f = [grad_Wv[i], grad_Wk[i], grad_Wq[i], grad_Wh2[i], grad_Wh1[i]]
-            j = [Wv[i], Wk[i], Wq[i], Wh2[i], Wh1[i]]
-            for w in range(len(f)):
-                if f[w] is not None:
-                    j[w] -= learning_rate * f[w]
-            # if(i%2 == 0):
-            active_ratio = n.mean(hidden1 > 0) 
-               
-            if n.linalg.norm(Wh1[i]) > 10 and active_ratio > 0.50 and i%2 == 1:
-                Wh1[i] *= 0.92
-                Wh2[i] *= 0.92
+
+        
+            #active_ratio = n.mean(hidden1 > 0) 
+
+            #new training system: i call it adaptive alternating decay
+
+            # distAR = (active_ratio - 0.5) / 1
+            # distSize = -(n.linalg.norm(Wh1[i]) - 10) / 5
+            #active_ratio_fctr = 1.0 + (0.5 - active_ratio) * learning_rate
+            #size_fctr = 1.0 + (10 - n.linalg.norm(Wh1[i])) * (learning_rate)
+            # if n.linalg.norm(Wh1[i]) > 10 and active_ratio > 0.50 and i%2 == 1:
+            #     Wh1[i] *= 0.92
+            #     Wh2[i] *= 0.92
+            # if i% 2 == 1:
+                
+
+            #     diff = (0.5 - active_ratio)
+            #     norm = n.linalg.norm(Wh1[i])
+            #     sizeDiff = 10-norm
+
+
+            #     # vector = Wh1[i] / (norm + 1e-9)
+
+              
+            #     # moveAmt = (vector * diff * learning_rate * 0.1) + (vector * sizeDiff * learning_rate * 0.1)
+
+            #     # Wh1[i] += moveAmt
+
+            #     # Wh2[i] += (Wh2[i] / n.linalg.norm(Wh2[i] + 1e-9)) * (diff + sizeDiff) * (learning_rate * 0.1)
+
+            #     Wh1[i] *= 1.0 + (diff + sizeDiff) * learning_rate * 0.1
+
+            #     norm2 = n.linalg.norm(Wh2[i])
+            #     Wh2[i] *= 1.0 + (diff + sizeDiff) * learning_rate * 0.1
+                # if distAR > distSize:
+                #     #🪦 0.92 rests here... its a sad day for all of us: we gather here to mourn the death of a loyal weight decaying constant: 0.92. he always  rose to the challenge but then we became too greedy and he kinda started doing bad things to the weight scales. 2/10/26 - Remeber though 0.92 will never die because it will live on in our hearts.
+                #     Wh1[i] *= (1 - learning_rate) * distAR
+                #     Wh2[i] *= (1 - learning_rate) * distAR 
+                # else:
+                #     Wh1[i] *= (1 + learning_rate) * distSize
+                #     Wh2[i] *= (1 + learning_rate) * distSize
+                
+           
         Wo_final -= learning_rate * grad_Wo_final
         
         if(not dictLock):
@@ -734,11 +778,14 @@ def save_layers(filename, layer_list):
         obj_arr[idx] = layer.get() 
     np.save(filename, obj_arr)
 steps = 20000000
+indxs = n.array([dictionaryLookup[word] for word in cleaned])
+
 if(train):
     for i in range(steps):
+
+
         x = cleaned
         # start = n.random.randint(int(dim + 1), len(x) - int(dim + 1) - 1)
-        indxs = n.array([dictionaryLookup[word] for word in cleaned])
         start = n.random.randint(0, len(cleaned) - dim - 1, size=batch) #find all starting points for the batch
         # start = int(start)
         
@@ -773,6 +820,20 @@ if(train):
             sys.stdout.write(f'\rProgress: |{bar:<20}| {percent:.1f}% | {lock} | {dictLock}')
             sys.stdout.flush()
 
+            xs.append(i)
+        
+            ys.append((GLoss / (i + 1)).get())
+
+            plt.clf()
+            plt.plot(xs,ys,'b-')
+            plt.xlabel("Steps")
+            plt.ylabel("Loss")
+            plt.title("The Amazing Loss Tracker")
+            plt.grid(True)
+            plt.savefig('loss_curve.png')
+            plt.close()
+
+
         if i % (steps * 0.00005) == 0:
             
 
@@ -787,7 +848,7 @@ if(train):
             cpu_dict = {word: vectors[dictionaryLookup[word]].get() for word in words}
             np.save('vocab.npy', cpu_dict)
             print(f"\n[Checkpoint] Step {i} | GLoss: {GLoss/(i+1):.4f}")
-
+            
 
 
 
@@ -797,9 +858,14 @@ if(train):
         # learning_rate = max(0.00001, base_lr * (0.95 ** (i / (steps*0.01))))
         min_lr = 0.00001 
         learning_rate = min_lr + (0.5) * (base_lr - min_lr) * (1 + math.cos(math.pi * i / steps))
+
+        
+
         
     
     print("\n" + str(GLoss/steps))
+    
+
 
     
 
@@ -965,6 +1031,7 @@ def write(segment_str, leng):
 
 
         currentX = vectors[n.array([dictionaryLookup[word] for word in segment])].copy() + PE
+        mask = n.tril(n.ones((lengthOfSegment, lengthOfSegment))) 
 
         for i in range(num_layers):
             X = normLayer(currentX, 1e-5)
@@ -990,7 +1057,6 @@ def write(segment_str, leng):
             scores = (Q @ n.transpose(K, (0,1,3,2))) / math.sqrt(dimPerHead) 
 
 
-            mask = n.tril(n.ones((lengthOfSegment, lengthOfSegment))) 
             scores = n.where(mask == 0, -1e9, scores)
 
             A = softmax(scores)
@@ -1075,7 +1141,7 @@ def write(segment_str, leng):
     print(output_str)
 
         
-write("Once upon a time, Lily", 100)
+write("I like building ", 100)
 
 
 
@@ -1156,6 +1222,15 @@ Log:
   - 2/9/26
   - First log in a long time: basically while I was working on this project in the past two weeks, I did not have much time to really implement any new major changes. 
   - However, yesterday I added in punctuation to beta but no post processing. Also this has not been tested fully yet but it is at a GLoss of 5.01 as of 11:14 am today which means that after like one more day of training I think I will have good quality or at least slightly comprehensible output.
+
+  - 2/28/26
+  - Wow, a long time: well basically I have found some interesting news: apparently it works better without any decay... This is sad because apparently 0.92 was doing nothing but ruining the weight magnitude so it was the main issue: the relu being around 50% was just a weird side effect that I have yet to research fully but I will research it completely in alpha as that was the version with the most "benefit"
+        - I would have worked on it more but swim started.
+  - Anyways in other news: I added in a brand new input.txt made up of scrappings of the web from the FineWeb dataset: https://huggingface.co/datasets/HuggingFaceFW/fineweb/viewer/CC-MAIN-2013-20/train?p=19
+        - Just found out that "FineWeb" is anything but fine. Literally 25% of it is like website urls and copyrights which makes sense but they hinder convergence.
+  - In other news, I added in a Graph to visualize the loss curves which can be seen in the loss_curve.png that will be created.
+  - Also i found that its really difficult to break into 5 GLoss: especially on this dataset but that just means that we have found a new challenge to overcome
+
 
   DISCLAIMER: I attempted to do the math and I have failed a bunch of times so it may not be perfect. Also, I did need help from articles to get some of the math for the backpropogation. The math for PE and Attention came directly from Attention is All You Need. 
 
