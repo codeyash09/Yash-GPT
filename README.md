@@ -17,6 +17,10 @@ I would have uploaded my "trained" weights too but github would not allow me to 
 <img width="588" height="435" alt="image" src="https://github.com/user-attachments/assets/28627947-59cd-4851-b5af-a7c5f004c1c2" />
 <p>0.005 lr</p>
 
+<img width="646" height="486" alt="image" src="https://github.com/user-attachments/assets/ac106634-71ea-46f3-b764-7ef2d14039b7" />
+<p>PR: Longest run</p>
+
+
                                                                
 
 The new code does not have that many comments on a lot of it because most of the code is from before and if you check the commented out segments, you will likely find explantations behind most of the code.
