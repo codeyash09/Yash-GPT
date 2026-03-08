@@ -1,4 +1,3 @@
-
 🚨🚨🚨🚨 BETA IS UNDER DEVELOPMENT  🚨🚨🚨🚨
 
 <h1>Overview</h1>
@@ -8,6 +7,10 @@ Hi! Im Yash
 I am working on building a block-based coding website where children can build transformers using blocks and I am trying to make it have 10 difficulty levels so it goes from surface level to true math: the rationale for this is that I want to teach kids at a young age how llms work because I learned coding from Scratch as a second grader and have self-studied to get to where I am, so imagine if a second grader learns backprop. The reason I made this is because of the quote attributed to Albert Einstein about if I can't explain it simply I don't understand it enough so I need to understand it as deeply as possible before I try to teach anyone.
 
 I would have uploaded my "trained" weights too but github would not allow me to upload files that large.
+
+<h2> Update: 3//26 </h2>
+<img width="750" height="557" alt="image" src="https://github.com/user-attachments/assets/6974ec34-c680-485e-8c20-b26ab81b4f1a" />
+<p>BPE allows for greater gains in less time. 6.11868 GLoss in 900 steps. </p>
 
 <h2> Update: 3/1/26 </h2>
 <p>Beta works however for faster runs, delete the input.txt file and rename "oldinput.txt" to "input.txt". Also now it makes loss curve pngs!!!</p>
@@ -52,6 +55,7 @@ I'm saying this so you understand how much power it uses and I know that it does
 
 <br>
 
+<h3>FRESH START GUIDE ---> Run BPE.py and DO NOT CLOSE until Layer [X] ReLU Activity: [Y]% is printed. Then you may close it and start running beta.py</h3>
 <h3>Training may take multiple days to train to a level of coherent generation </h3>
 <p>Set train to True and let it run. Furthermore for alpha unlock dictionary by setting dictLock to False</p>
 <p>Sidenote: I recommend only stopping training once it prints "[Checkpoint] Step ... | GLoss: ..." as it will not save otherwise</p>
