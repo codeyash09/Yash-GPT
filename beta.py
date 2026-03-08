@@ -1292,6 +1292,11 @@ Log:
        - "I like building  , up involved . " " " " " " " " , hence give it , this … . 40 new numbering ( also is still number ) , these sale that the u . all . we have an information in any + . these horse ) 25 for all wednesday , in across one craft are necessary 2007 more corrupted at a spat ( 35 . now my notes . retrieved thesis your issues " " december in danger least . by halloween nothing information everyone better reporting . , it all , we’ve high austen from"
        - "I like building  for the whole buns print for santa conflict . in washington does about community . 5 to instance also risks . generally . s a version being and an required in in fine . ] its aquatic upon as well as much fund . " the landing toward days . as allow this is nothing . in local schools / . danger . and unhelpful eu . wade . a very year , retailers . this of each through all law . with running of lansing hallows case ( funding administration member ( there with education of hdf life ,"
 
+  - 3/8/26
+  - Byte Pair Encoding IMPLEMENTED!!!!
+  - Essentially now the number of tokens is capped at 50k meaning it starts out at a lower GLoss and learns faster. I just hit 6.14 in 600 steps... YAYYY!!!
+  - Basically what it does is merge together characters into one token based on how frequently they appear together which means more useful tokens like running which used to be its own token is now like run and ing. 
+  
 
   DISCLAIMER: I attempted to do the math and I have failed a bunch of times so it may not be perfect. Also, I did need help from articles to get some of the math for the backpropogation. The math for PE and Attention came directly from Attention is All You Need. 
 
