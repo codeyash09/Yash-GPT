@@ -20,7 +20,7 @@ vocabSize = 0
 num_heads = 16
 
 num_layers = 12
-learning_rate = 0.0001 #the lr is rly high but I did this so it will cause the model to jump out of plateaus. Nvm im just make it warm up to the correct size
+learning_rate = 0.005 #the lr is rly high but I did this so it will cause the model to jump out of plateaus. Nvm im just make it warm up to the correct size
 
 base_lr = 0.01/math.sqrt(num_layers)
 
@@ -82,10 +82,26 @@ def softmax(v):
     probabilities = exp_vector / n.sum(exp_vector, axis=-1, keepdims=True)
     return probabilities
     
+def translate(word, merges): #literally the same as the other translate func from bpe.py
+    
+    cTokens = list(word) + ['</w>']
+    for p in merges:
+        i = 0
+        while (i < len(cTokens) - 1):
+            if cTokens[i] == p[0] and cTokens[i + 1] == p[1]:
+                cTokens = cTokens[:i] + [''.join(p)] + cTokens[i+2:]
+            else:
+                i+=1
+    return cTokens
 
 with open('input.txt', 'r', encoding='utf-8') as f:
     raw_text = f.read()
 
+merges = []
+with open('merges.txt', 'r', encoding='utf-8') as f:
+    for l in f:
+        a, b = l.strip().split(' ', 1)
+        merges.append((a,b))
 
 
 cleaned = raw_text.replace('-', " - ").replace('.', " . ").replace(',', " , ").replace('?', " ? ").replace('!', " ! ").replace(':', " : ").replace(';', " ; ").replace('--', " -- ").replace("'", " ' ").replace('"', ' " ').replace('(', " ( ").replace(')', " ) ").replace('[', " [ ").replace(']', " ] ").replace('—'," — ").replace('”', " ” ").replace('–', ' – ').replace(' s ', ' s ').replace('“', ' “ ').lower().split()
@@ -145,8 +161,12 @@ vectors = n.stack([dict[word] for word in words])
 
 dictionaryLookup = {}
 
+
 for index, word in enumerate(words):
     dictionaryLookup[word] = index
+
+
+
 
 #dictionary and vocab loading ^
 
@@ -159,8 +179,20 @@ PE[:, 0::2] = n.sin(position * rates[:, 0::2])
 PE[:, 1::2] = n.cos(position * rates[:, 1::2])
 
 ww = n.zeros(len(words)) #added this bc looking up for weights inside the loop took a lot of time: basically made a lookup table
+
+q = 0
 for word, val in word_weights.items():
-    ww[dictionaryLookup[word]] = val
+    tList = translate(word, merges)
+    if q % 50 == 0:
+        bar = '█' * int(q / len(word_weights) * 20)
+        percent = (q + 1) / len(word_weights) * 100
+
+        sys.stdout.write(f'\rWW Progress: |{bar:<20}| {percent:.1f}% |')
+        sys.stdout.flush()
+    q+=1
+    for t in tList:
+        if t in dictionaryLookup:
+            ww[dictionaryLookup[t]] = val
 #utils ^
 
 
@@ -778,7 +810,28 @@ def save_layers(filename, layer_list):
         obj_arr[idx] = layer.get() 
     np.save(filename, obj_arr)
 steps = 20000000
-indxs = n.array([dictionaryLookup[word] for word in cleaned])
+
+
+#indxs = n.array([dictionaryLookup[word] for word in cleaned])
+tkns = []
+q = 0
+
+cache = {}
+
+for w in cleaned:
+    if w not in cache:
+
+        cache[w] = translate(w, merges)
+    tkns.extend(cache[w])
+    if q % 50 == 0:
+        bar = '█' * int(q / len(cleaned) * 20)
+        percent = (q + 1) / len(cleaned) * 100
+
+        sys.stdout.write(f'\rTkns Progress: |{bar:<20}| {percent:.1f}% |')
+        sys.stdout.flush()
+    q+=1
+indxs = n.array([dictionaryLookup[t] for t in tkns if t in dictionaryLookup])
+
 
 if(train):
     for i in range(steps):
@@ -1230,6 +1283,14 @@ Log:
         - Just found out that "FineWeb" is anything but fine. Literally 25% of it is like website urls and copyrights which makes sense but they hinder convergence.
   - In other news, I added in a Graph to visualize the loss curves which can be seen in the loss_curve.png that will be created.
   - Also i found that its really difficult to break into 5 GLoss: especially on this dataset but that just means that we have found a new challenge to overcome
+
+  
+  - 3/4/26
+  - Longest training run I have ever done just ended at 6.55 GLoss... Sad but thats how it is ig
+  - Here are its final outputs: 
+       - Output "I like building  , michael with the years below . a budget and dawn writer : real repair area . " " " “ founder of time he is that always 20 a one as zero ( language are area , all their two nearly exist this for these that or those about a lot still on your and he said . ok . when they with rent this training when may record . there are 1900 that climate german on quantity firm . this sugar night as decent and human little make basic having focused as important 10 : 0 . close"
+       - "I like building  , up involved . " " " " " " " " , hence give it , this … . 40 new numbering ( also is still number ) , these sale that the u . all . we have an information in any + . these horse ) 25 for all wednesday , in across one craft are necessary 2007 more corrupted at a spat ( 35 . now my notes . retrieved thesis your issues " " december in danger least . by halloween nothing information everyone better reporting . , it all , we’ve high austen from"
+       - "I like building  for the whole buns print for santa conflict . in washington does about community . 5 to instance also risks . generally . s a version being and an required in in fine . ] its aquatic upon as well as much fund . " the landing toward days . as allow this is nothing . in local schools / . danger . and unhelpful eu . wade . a very year , retailers . this of each through all law . with running of lansing hallows case ( funding administration member ( there with education of hdf life ,"
 
 
   DISCLAIMER: I attempted to do the math and I have failed a bunch of times so it may not be perfect. Also, I did need help from articles to get some of the math for the backpropogation. The math for PE and Attention came directly from Attention is All You Need. 
