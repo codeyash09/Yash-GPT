@@ -129,4 +129,4 @@ with open('merges.txt', 'w', encoding='utf-8') as f:
         f.write(pair[0] + ' ' + pair[1] + '\n')
 
 
-runpy.run_path("myai.py")
+runpy.run_path("beta.py")
