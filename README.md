@@ -9,12 +9,7 @@
 <p>To teach this effectively, I built and trained this transformer architecture from scratch to ensure a deep, foundational understanding of the underlying mechanics.</p>
 
 <hr>
-          .d88888888b.                         
-         d88P"    "Y88b        
-         888        888       
-         Y88b      d88P    
-          "88bo  od88"  
-         d88888  88888b
+
 <h2>Coming Soon: Project OMEGA</h2>
 <p><b>Release Date:</b> Estimated Friday, June 26th</p>
 <p><i>Something new is on the horizon.</i> OMEGA is our largest, fastest, and most ambitious model yet.</p>
