@@ -17,6 +17,11 @@
 <li><b>Parameters:</b> ~380 Million</li>
 <li><b>Performance:</b> Converged to 4.02 loss in 2500 steps (>5x faster than Beta).</li>
 </ul>
+<br>
+<h2>Coming Soon: PULSE</h2>
+<img width="1028" height="719" alt="image" src="https://github.com/user-attachments/assets/b6e77d6b-6a46-4c15-973a-cd8efaee9abd" />
+<p>Progress Utilizing Loss Scaling Engine</p>
+
 
 <hr>
 
