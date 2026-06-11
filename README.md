@@ -1,85 +1,116 @@
-<i>Something new is on the horizon.</i>
+<h1>Block-Based Transformer Educational Tool</h1>
 
-OMEGA is close: the largest, fastest, and most ambitious model yet (converged to 4.02 loss in 2500 steps: >5x faster than beta). ~380 mil parameters
-Release Date: Estimated to be Friday, June 26th.
+<blockquote>"If you can't explain it simply, you don't understand it well enough." — Albert Einstein</blockquote>
 
-<h1>Overview</h1>
+<p>Welcome. I am Yash. I built this project to teach children how Large Language Models (LLMs) work from the ground up. Inspired by my own journey of learning to code on Scratch in the second grade, I am developing a block-based coding environment with 10 difficulty levels. This curriculum is designed to take students from surface-level concepts all the way to understanding true mathematical backpropagation.</p>
 
-Hi! Im Yash
+<p>To teach this effectively, I built and trained this transformer architecture from scratch to ensure a deep, foundational understanding of the underlying mechanics.</p>
 
-I am working on building a block-based coding website where children can build transformers using blocks and I am trying to make it have 10 difficulty levels so it goes from surface level to true math: the rationale for this is that I want to teach kids at a young age how llms work because I learned coding from Scratch as a second grader and have self-studied to get to where I am, so imagine if a second grader learns backprop. The reason I made this is because of the quote attributed to Albert Einstein about if I can't explain it simply I don't understand it enough so I need to understand it as deeply as possible before I try to teach anyone.
+<hr>
 
-I would have uploaded my "trained" weights too but github would not allow me to upload files that large.
+<h2>Coming Soon: Project OMEGA</h2>
+<p><b>Release Date:</b> Estimated Friday, June 26th</p>
+<p><i>Something new is on the horizon.</i> OMEGA is our largest, fastest, and most ambitious model yet.</p>
+<ul>
+<li><b>Parameters:</b> ~380 Million</li>
+<li><b>Performance:</b> Converged to 4.02 loss in 2500 steps (>5x faster than Beta).</li>
+</ul>
 
-<h2> Update: 3//26 </h2>
-<img width="750" height="557" alt="image" src="https://github.com/user-attachments/assets/6974ec34-c680-485e-8c20-b26ab81b4f1a" />
-<p>BPE allows for greater gains in less time. 6.11868 GLoss in 900 steps. </p>
+<hr>
 
-<h2> Update: 3/1/26 </h2>
-<p>Beta works however for faster runs, delete the input.txt file and rename "oldinput.txt" to "input.txt". Also now it makes loss curve pngs!!!</p>
-<img width="631" height="478" alt="image" src="https://github.com/user-attachments/assets/d2784859-2204-4238-b697-e2d32d53f074" />
-<p>Fresh start: 0.0001 lr</p>
+<h2>Model Architecture and Statistics</h2>
+<p><i>Note: Pre-trained weights are not hosted on GitHub due to file size limits.</i></p>
 
-<img width="588" height="435" alt="image" src="https://github.com/user-attachments/assets/28627947-59cd-4851-b5af-a7c5f004c1c2" />
-<p>0.005 lr</p>
+<h3>ALPHA (Stable / Recommended)</h3>
+<ul>
+<li><b>Dimensions:</b> 512</li>
+<li><b>Attention Heads:</b> 8</li>
+<li><b>Layers:</b> 6</li>
+<li><b>Total Parameters:</b> 89,662,976</li>
+<li><b>Best GLoss:</b> 4.247961485781738</li>
+</ul>
 
-<img width="646" height="486" alt="image" src="https://github.com/user-attachments/assets/ac106634-71ea-46f3-b764-7ef2d14039b7" />
-<p>PR: Longest run</p>
+<h3>BETA (Development)</h3>
+<ul>
+<li><b>Dimensions:</b> 1024</li>
+<li><b>Attention Heads:</b> 16</li>
+<li><b>Layers:</b> 12</li>
+<li><b>Total Parameters:</b> 292,584,448</li>
+<li><b>Current GLoss:</b> 4.864489969095911</li>
+</ul>
 
+<p><b>A Note on Beta's Stability:</b> I am currently investigating a bug where Beta stops improving at a loss of 5.95. The root cause was identified as clipping that was inconsistent across forward and backpropagation, leading to overfitting due to a low data-to-parameters ratio. Alpha remains the recommended and most stable build.</p>
 
-                                                               
+<hr>
 
-The new code does not have that many comments on a lot of it because most of the code is from before and if you check the commented out segments, you will likely find explantations behind most of the code.
+<h2>System Requirements and Hardware Warning</h2>
+<p>Training these models requires significant computing power. Please review the hardware parameters before proceeding.</p>
 
-
-Do not be worried about even layers (0, 2, 4) having spikes (both above and below 40-60%) as the 0.92 decay on the stabilizing layers (1, 3, 5) will pull them back into the "Goldilocks" zone as the backprop and feed forward will cause the restrictions to flow into the even layers. Furthermore, the even layers are simply learning and exploring nueron usage and they will stabilize as model reaches equillibrium due to the nature of the alternating weight control system.
-
-When I used a uniform decay, I encountered dying ReLU and without any decay, ReLU would gradually climb to above 70% and cause Loss to spike. Thus, I have found that this alternating method works best.
-
-Best GLoss (As of 1/6/26 - ALPHA) 4.247961485781738
-Current GLoss (2/9/26 - BETA) - 4.864489969095911
-
-I built this over the course of winter break and did not make the repo until later on because I did not have a need to share this with anyone until then and also because I already locally backup my files.
-
-Use alpha, beta is unstable and will slow down and completely stop improving at 5.95 (I am investigating this currently) ---> Guessed Culprit: Overfitting due to low data to parameters ratio.
-
-Real culprit: clipping was not aligned and not consistent across forward and backprop
-
-Anyways, I trained this on my rtx 4080 super with 64 gigs of ram and a ryzen 9 7950x3d on the pc I built over the last summer. Basically this is a warning because my GPU was at 99% usage with 7.6 gigs of its VRAM used up on one batch on beta (alpha is not as strenous) but I was also using 25.8 gigs of ddr5 ram. 
-I'm saying this so you understand how much power it uses and I know that it does not work on all devices.
-
-
-<h1>Quick Start</h1>
-
-<p style="text-weight:bold;">Requires:</p>
-<li>CuPy (NVIDIA GPU)</li>
+<p><b>Software Requirements:</b></p>
+<ul>
 <li>Python</li>
 <li>NumPy</li>
+<li>CuPy (Requires NVIDIA GPU)</li>
+</ul>
 
-<br>
+<p><b>Hardware Profile (Development Machine):</b></p>
+<ul>
+<li><b>GPU:</b> RTX 4080 Super (16GB VRAM)</li>
+<li><b>CPU:</b> Ryzen 9 7950X3D</li>
+<li><b>RAM:</b> 64GB DDR5</li>
+</ul>
 
-<h3>FRESH START GUIDE ---> Run BPE.py and DO NOT CLOSE until Layer [X] ReLU Activity: [Y]% is printed. Then you may close it and start running beta.py</h3>
-<h3>Training may take multiple days to train to a level of coherent generation </h3>
-<p>Set train to True and let it run. Furthermore for alpha unlock dictionary by setting dictLock to False</p>
-<p>Sidenote: I recommend only stopping training once it prints "[Checkpoint] Step ... | GLoss: ..." as it will not save otherwise</p>
+<p><b>Warning:</b> A single batch on Beta utilized 99% of GPU compute, 7.6GB of VRAM, and 25.8GB of system RAM. Ensure your system can handle these loads before initiating training.</p>
 
-<h2> Generation </h2>
-<p>Turn off train (set train to False) at the start which will lead to generation</p>
-<p>Sidenote: To change seed text, line 814 in alpha is calling the write function, simply change the text inside the "" to whatever seed text one prefers. Furthermore, one can adjust how many token will be generated using the second parameter of the write function.</p>
-<p>Sidenote: beta's generation is rather slow but it has punctuation now but no post processing so it will not capitalize after a period, exclamation point, question mark, or any other end of sentence punctuation. Furthermore, punctuation is seperated by spaces in beta.</p>
+<hr>
 
+<h2>Quick Start Guide</h2>
 
-<h1>STATS!!!</h1>
-<h2>ALPHA</h2>
-<li>512 dimensions</li>
-<li>8 heads</li>
-<li>6 layers</li>
-<li>89,662,976 parameters</li>
+<h3>1. Initial Setup and Byte-Pair Encoding (BPE)</h3>
+<p><b>FRESH START GUIDE:</b> Before running the main model, you must initialize the BPE.</p>
+<ul>
+<li>Run <code>BPE.py</code>.</li>
+<li><b>Do not close</b> the script until the console prints: <code>Layer [X] ReLU Activity: [Y]%</code>.</li>
+<li>Once printed, you may safely close the script and run <code>beta.py</code> (or <code>alpha.py</code>).</li>
+</ul>
+<p><i>Tip for Faster Runs (Beta):</i> Delete the <code>input.txt</code> file and rename <code>oldinput.txt</code> to <code>input.txt</code>.</p>
 
-<br>
+<h3>2. Training</h3>
+<ul>
+<li>Set <code>train = True</code> in the script to begin.</li>
+<li>For Alpha: Unlock the dictionary by setting <code>dictLock = False</code>.</li>
+<li><b>Important:</b> Training may take multiple days to achieve coherent text generation. Only interrupt training <i>after</i> you see <code>[Checkpoint] Step ... | GLoss: ...</code> in the console, otherwise your progress will not save.</li>
+</ul>
 
-<h2>BETA</h2> 
-<li>1024 dimensions</li>
-<li>16 heads</li>
-<li>12 layers</li>
-<li>292,584,448 parameters</li>
+<h3>3. Generation</h3>
+<ul>
+<li>Set <code>train = False</code> in the script at the start.</li>
+<li><b>Seed Text:</b> To change the seed text in Alpha, navigate to line 814 and modify the text string inside the <code>write()</code> function. The second parameter controls the token generation count.</li>
+<li><b>Note on Beta Generation:</b> Beta's generation is currently slower but supports punctuation (separated by spaces). It lacks post-processing, meaning it will not auto-capitalize after end-of-sentence punctuation.</li>
+</ul>
+
+<hr>
+
+<h2>Technical Notes: Alternating Weight Control</h2>
+<p>When reviewing the output, you will notice spikes in even layers (0, 2, 4)—both above and below 40-60%. <b>This is expected behavior.</b></p>
+<p>Initially, implementing a uniform decay resulted in dying ReLUs. Conversely, applying no decay caused ReLUs to climb above 70%, resulting in massive Loss spikes. To solve this, I implemented an alternating weight control system. The even layers are allowed to explore neuron usage, while a 0.92 decay on the stabilizing odd layers (1, 3, 5) pulls them back into the "Goldilocks" zone during feed-forward and backpropagation. The model will naturally stabilize as it reaches equilibrium.</p>
+
+<hr>
+
+<h2>Development Updates and Loss Curves</h2>
+
+<h3>Update: 3/26/26</h3>
+<p>BPE allows for greater gains in less time. Achieved 6.11868 GLoss in 900 steps.</p>
+<img width="750" height="557" alt="image" src="https://github.com/user-attachments/assets/6974ec34-c680-485e-8c20-b26ab81b4f1a" />
+
+<h3>Update: 3/1/26</h3>
+<p>Beta is operational and now generates loss curve PNGs automatically.</p>
+
+<p><b>Fresh start: 0.0001 lr</b></p>
+<img width="631" height="478" alt="image" src="https://github.com/user-attachments/assets/d2784859-2204-4238-b697-e2d32d53f074" />
+
+<p><b>0.005 lr</b></p>
+<img width="588" height="435" alt="image" src="https://github.com/user-attachments/assets/28627947-59cd-4851-b5af-a7c5f004c1c2" />
+
+<p><b>Personal Record: Longest run</b></p>
+<img width="646" height="486" alt="image" src="https://github.com/user-attachments/assets/ac106634-71ea-46f3-b764-7ef2d14039b7" />
