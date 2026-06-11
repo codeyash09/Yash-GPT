@@ -1,3 +1,5 @@
+<img width="375" height="132" alt="image" src="https://github.com/user-attachments/assets/451b9048-f5ce-4545-b2f3-f2b463c4e2b8" />
+
 <h1>Block-Based Transformer Educational Tool</h1>
 
 <blockquote>"If you can't explain it simply, you don't understand it well enough." — Albert Einstein</blockquote>
