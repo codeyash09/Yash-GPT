@@ -1,4 +1,6 @@
-Something new is on the horizon. OMEGA is close: the largest, fastest, and most ambitious model yet (converged to 4.02 loss in 2500 steps: >5x faster than beta)
+Something new is on the horizon. OMEGA is close: the largest, fastest, and most ambitious model yet (converged to 4.02 loss in 2500 steps: >5x faster than beta). 
+
+Release Date: Estimated to be Friday, June 26th.
 
 <h1>Overview</h1>
 
