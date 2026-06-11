@@ -1,4 +1,4 @@
-🚨🚨🚨🚨 BETA IS UNDER DEVELOPMENT  🚨🚨🚨🚨
+Something new is on the horizon. OMEGA is close: the largest, fastest, and most ambitious model yet (converged to 4.02 loss in 2500 steps: >5x faster than beta)
 
 <h1>Overview</h1>
 
