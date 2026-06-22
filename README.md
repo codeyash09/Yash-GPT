@@ -21,6 +21,7 @@
 
 <p>*Utilizing one batch run</p>
 <p>**Utilizing emulated 64 batch run</p>
+<p>Sidenote: Most Loss Values refer to loss on the Wikitext-103 dataset with the exception of explicitly labeled curves.</p>
 
 <br>
 <h2>Coming Soon: PULSE</h2>
