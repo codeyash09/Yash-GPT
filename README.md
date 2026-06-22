@@ -15,8 +15,13 @@
 <p><i>Something new is on the horizon.</i> OMEGA is our largest, fastest, and most ambitious model yet.</p>
 <ul>
 <li><b>Parameters:</b> ~380 Million</li>
-<li><b>Performance:</b> Converged to 4.02 loss in 2500 steps (>5x faster than Beta).</li>
+<li><b>Performance:</b> Converged to 4.20 loss in 5000 steps (>5x faster than Beta).*</li>
+<li><b>Update: </b>Just broke 4.00 loss and dropping fast.**</li>
 </ul>
+
+<p>*Utilizing one batch run</p>
+<p>**Utilizing emulated 64 batch run</p>
+
 <br>
 <h2>Coming Soon: PULSE</h2>
 <p>Progress Utilizing Loss Scaling Engine</p>
