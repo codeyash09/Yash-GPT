@@ -11,7 +11,7 @@
 <hr>
 
 <h2>Coming Soon: Project OMEGA</h2>
-<p><b>Release Date:</b> Estimated Friday, June 26th</p>
+<p><b>Release Date:</b> Estimated Friday, June 26th''</p>
 <p><i>Something new is on the horizon.</i> OMEGA is our largest, fastest, and most ambitious model yet.</p>
 <ul>
 <li><b>Parameters:</b> ~380 Million</li>
@@ -19,6 +19,7 @@
 <li><b>Update: </b>Just broke 4.00 loss and dropping fast.**</li>
 </ul>
 
+<p>''Delay. While Training run hit 3.9 easily, generation lacked leading to an audit of the entire system which revealed that the vocab.npy did not have enough tokens meaning a full restart was necessary.</p>
 <p>*Utilizing one batch run</p>
 <p>**Utilizing emulated 64 batch run</p>
 <p>Sidenote: Most Loss Values refer to loss on the Wikitext-103 dataset with the exception of explicitly labeled curves.</p>
