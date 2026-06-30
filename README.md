@@ -10,16 +10,15 @@
 
 <hr>
 
-<h2>Coming Soon: Project OMEGA</h2>
-<p><b>Release Date:</b> Estimated Friday, June 26th''</p>
-<p><i>Something new is on the horizon.</i> OMEGA is our largest, fastest, and most ambitious model yet.</p>
+<h2>Latest Release: Project OMEGA</h2>
+<p><b>Status:</b> Live</p>
+<p><i>The wait is over.</i> OMEGA is our largest, fastest, and most ambitious model yet.</p>
 <ul>
 <li><b>Parameters:</b> ~380 Million</li>
-<li><b>Performance:</b> Converged to 4.20 loss in 5000 steps (>5x faster than Beta).*</li>
-<li><b>Update: </b>Just broke 4.00 loss and dropping fast.**</li>
+<li><b>Performance:</b> Peaked at an impressive <b>3.85 loss</b>.</li>
+<li><b>Update:</b> Following a rigorous system audit and a full restart to expand the <code>vocab.npy</code> token density, OMEGA has successfully stabilized for both training and generation.</li>
 </ul>
 
-<p>''Delay. While Training run hit 3.9 easily, generation lacked leading to an audit of the entire system which revealed that the vocab.npy did not have enough tokens meaning a full restart was necessary.</p>
 <p>*Utilizing one batch run</p>
 <p>**Utilizing emulated 64 batch run</p>
 <p>Sidenote: Most Loss Values refer to loss on the Wikitext-103 dataset with the exception of explicitly labeled curves.</p>
@@ -33,6 +32,13 @@
 
 <h2>Model Architecture and Statistics</h2>
 <p><i>Note: Pre-trained weights are not hosted on GitHub due to file size limits.</i></p>
+
+<h3>OMEGA (Latest / Flagship)</h3>
+<ul>
+<li><b>Total Parameters:</b> ~380,000,000</li>
+<li><b>Best GLoss:</b> 3.85</li>
+<li><b>Status:</b> Operational. Represents the current pinnacle of this architecture, featuring increased scale and optimized convergence rates.</li>
+</ul>
 
 <h3>ALPHA (Stable / Recommended)</h3>
 <ul>
