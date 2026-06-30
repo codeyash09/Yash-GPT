@@ -17,6 +17,8 @@
 <li><b>Parameters:</b> ~380 Million</li>
 <li><b>Performance:</b> Peaked at an impressive <b>3.85 loss</b>.</li>
 <li><b>Update:</b> Following a rigorous system audit and a full restart to expand the <code>vocab.npy</code> token density, OMEGA has successfully stabilized for both training and generation.</li>
+<img width="793" height="794" alt="image" src="https://github.com/user-attachments/assets/e611a69c-c808-4eca-8038-12fc00128175" />
+
 </ul>
 
 <p>*Utilizing one batch run</p>
